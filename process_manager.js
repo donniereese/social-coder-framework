@@ -10,7 +10,7 @@ module.exports = process_manager = function() {
 
 util.inherits(process_manager,events.EventEmitter);
 
-process_manager.prototype.start = function(numThreads) {
+process_manager.prototype.start = function(threads) {
 	var i,
 	child,
 	that = this,
@@ -25,13 +25,18 @@ process_manager.prototype.start = function(numThreads) {
 		this.kill();
 		delete that.threads[this.pid];
 	};
-    
-	for ( i = 0; i < numThreads; i++ ) {
-		child = cp.fork(__dirname+path.sep+'Child.js');
-		child.on('message',onMessage);
-		child.on('error',onError);
-		child.on('disconnect',onDisconnect);
-		that.threads[child.pid] = child;
+
+	if(typeof threads == Number) {
+		for ( i = 0; i < threads; i++ ) {
+			child = cp.fork(__dirname+path.sep+'Child.js');
+			child.on('message',onMessage);
+			child.on('error',onError);
+			child.on('disconnect',onDisconnect);
+			that.threads[child.pid] = child;
+		}
+	} else {
+		var {} = threads;
+		child = cp.fork()
 	}
 };
 
