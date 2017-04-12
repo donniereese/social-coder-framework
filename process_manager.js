@@ -6,6 +6,7 @@ var process_manager,
 
 module.exports = process_manager = function() {
 	this.threads = {};
+	this.names = {};
 };
 
 util.inherits(process_manager,events.EventEmitter);
@@ -26,18 +27,54 @@ process_manager.prototype.start = function(threads) {
 		delete that.threads[this.pid];
 	};
 
-	if(typeof threads == Number) {
-		for ( i = 0; i < threads; i++ ) {
-			child = cp.fork(__dirname+path.sep+'Child.js');
-			child.on('message',onMessage);
-			child.on('error',onError);
-			child.on('disconnect',onDisconnect);
-			that.threads[child.pid] = child;
+	if(typeof threads == Array) {
+		// this is an array of 1 or more process spawns
+		for ( i = 0; i < threads.length-1; i++ ) {
+			if( !thread[i].hasOwnProperty('name') || !thread[i].name ) {
+				thread[i].name = 'child' + i.toString();
+			}
+			this.start(threads[i]);
 		}
+
 	} else {
-		var {} = threads;
-		child = cp.fork()
+		// This should be just one process spawn
+		// process thread info
+		var {
+			name = 'child' + i.toString(),
+			file_path = __dirname+path.sep,
+			file_name = 'child.js',
+			args = []
+		} = threads;
+
+		// console.log(',___________________________________________' + '\n' +
+		// 			'| New Forked Process:' + '\n' +
+		// 			'|-------------------------------------------' + '\n' +
+		// 			'| Name: ' + name + '\n' +
+		// 			'| Path: ' + file_path + '\n' +
+		// 			'| File: ' + file_name + '\n' +
+		// 			'| Args: ' + args + '\n' +
+		// 			'|___________________________________________'
+		// );
+
+		child = cp.fork(file_path + file_name);
+		child.on('message',onMessage);
+		child.on('error',onError);
+		child.on('disconnect',onDisconnect);
+		that.threads[child.pid] = child;
+		that.names[name] = child.pid;
 	}
+};
+
+process_manager.prototype.send = function(pid, msg) {
+	// sned wrapper
+};
+
+process_manager.prototype.getPID = function(name) {
+	// getPID of name
+};
+
+process_manager.prototype.getName = function(pid) {
+	// get name of PID
 };
 
 process_manager.prototype.stop = function(pid) {

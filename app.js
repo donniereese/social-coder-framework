@@ -1,26 +1,49 @@
 const fs = require('fs');
-const child_process = require('child_process');
-const pm = require('process_manager');
+const term = require('window-size');
+const pm = require('./process_manager.js');
+const readline = require('readline');
 
-pm.start();
+const process_manager = new pm();
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: '> '
+});
+
+
+// process_manager.on('event', console.log);
+// process_manager.start({name: 'test'});
+
+
+rl.prompt();
+
+rl.on('line', (line) => {
+
+    switch(line.trim()) {
+        case 'hello':
+            console.log('world!');
+            break;
+        default:
+            console.log(`Say what? I might have heard '${line.trim()}'`);
+            break;
+    }
+
+    readline.cursorTo(rl, 0, 0);uin
+    rl.write('\u250C');
+    rl.write('\u2500');
+
+    readline.cursorTo(rl, 0, term.height-1);
+    rl.prompt();
+
+}).on('close', () => {
+    console.log('Have a great day!');
+    process.exit(0);
+});
 
 
 
 
-// for(var i=0; i<3; i++) {
-//    var workerProcess = child_process.exec('node support.js '+i,function
-//       (error, stdout, stderr) {
-//
-//       if (error) {
-//          console.log(error.stack);
-//          console.log('Error code: '+error.code);
-//          console.log('Signal received: '+error.signal);
-//       }
-//       console.log('stdout: ' + stdout);
-//       console.log('stderr: ' + stderr);
-//    });
-//
-//    workerProcess.on('exit', function (code) {
-//       console.log('Child process exited with exit code '+code);
-//    });
-// }
+var drawBox = function(text) {
+
+};
