@@ -13,6 +13,7 @@
     "express": "^4.15.2",
     "socket.io": "^1.7.3",
     "string-length": "^1.0.1",
+    "utf8": "^2.1.2",
     "window-size": "^0.3.0"
   }
 }
